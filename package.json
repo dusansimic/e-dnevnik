@@ -1,0 +1,47 @@
+{
+  "name": "e-dnevnik",
+  "version": "0.0.1",
+  "description": "Elektronski dnevnik.",
+  "main": "app.js",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "moment": "^2.19.1",
+    "mongodb": "^2.2.33",
+    "morgan": "^1.9.0",
+    "nodemon": "^1.12.1"
+  },
+  "devDependencies": {
+    "xo": "^0.18.2"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "dev": "./node_modules/nodemon/bin/nodemon.js app.js",
+    "test": "xo"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dusansimic/e-dnevnik.git"
+  },
+  "keywords": [
+    "elektrnoski",
+    "dnevnik",
+    "e-dnevnik"
+  ],
+  "author": "Dušan Simić <dusan.simic1810@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dusansimic/e-dnevnik/issues"
+  },
+  "homepage": "https://github.com/dusansimic/e-dnevnik#readme",
+  "xo": {
+    "overrides": [
+      {
+        "files": "api.js",
+        "rules": {
+          "new-cap": "off"
+        }
+      }
+    ]
+  }
+}
