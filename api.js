@@ -5,35 +5,34 @@ const api = express.Router();
 
 const ServerUrl = process.env.srvurl || 'mongodb://localhost:27017/ednevnik';
 
-/* Function for ucenik validation
+// Function for ucenik validation
 const validateUcenik = ucenik => {
-	if (!ucenik.hasOwnProperty(id)) {
+	if (!('id' in ucenik) || ucenik.id === 0) {
 		return false;
 	}
-	if (!ucenik.hasOwnProperty(name)) {
+	if (!('name' in ucenik) || ucenik.name === '') {
 		return false;
 	}
-	if (!ucenik.hasOwnProperty(surname)) {
+	if (!('surname' in ucenik) || ucenik.surname === '') {
 		return false;
 	}
-	if (!(jmbg in ucenik)) {
+	if (!('jmbg' in ucenik) || ucenik.jmbg === 0) {
 		return false;
 	}
-	if (!(rodjen in ucenik)) {
+	if (!('rodjen' in ucenik) || ucenik.rodjen === '') {
 		return false;
 	}
-	if (!(razred in ucenik)) {
+	if (!('razred' in ucenik) || ucenik.razred === 0) {
 		return false;
 	}
-	if (!(odeljenje in ucenik)) {
+	if (!('odeljenje' in ucenik) || ucenik.odeljenje === 0) {
 		return false;
 	}
-	if (!(ispisan in ucenik)) {
+	if (!('ispisan' in ucenik) || ucenik.odeljenje === undefined) {
 		return false;
 	}
 	return true;
 };
-*/
 
 api.get('/', (req, res) => {
 	return res.send('Api is up and running!');
@@ -64,8 +63,17 @@ api.get('/getUcenici', (req, res) => {
 	});
 });
 
-api.get('/queryUcenici', (req, res) => {
-	const query = JSON.parse(req.body);
+api.post('/queryUcenici', (req, res) => {
+	const data = JSON.parse(req.body);
+
+	const query = {};
+
+	if (data.name !== '') {
+		query.name = data.name;
+	}
+	if (data.surname !== '') {
+		query.surname = data.surname;
+	}
 
 	MongoClient.connect(ServerUrl, (err, db) => {
 		if (err) {
@@ -88,11 +96,10 @@ api.get('/queryUcenici', (req, res) => {
 
 api.post('/addUcenik', (req, res) => {
 	const data = JSON.parse(req.body);
-	/* Check if ucenik is valid
+	// Check if ucenik is valid
 	if (!validateUcenik(data)) {
 		return res.status(400).send();
 	}
-	*/
 
 	MongoClient.connect(ServerUrl, (err, db) => {
 		if (err) {
