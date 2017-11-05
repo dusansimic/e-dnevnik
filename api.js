@@ -7,29 +7,29 @@ const ServerUrl = process.env.srvurl || 'mongodb://localhost:27017/ednevnik';
 
 // Function for ucenik validation
 const validateUcenik = ucenik => {
-	if (!('id' in ucenik) || ucenik.id === 0) {
-		return false;
+	if (!('id' in ucenik) || ucenik.id === '') {
+		return new Error('Id ucenika nije validan!');
 	}
 	if (!('name' in ucenik) || ucenik.name === '') {
-		return false;
+		return new Error('Ime ucenika nije validno!');
 	}
 	if (!('surname' in ucenik) || ucenik.surname === '') {
-		return false;
+		return new Error('Prezime ucenika nije validno!');
 	}
-	if (!('jmbg' in ucenik) || ucenik.jmbg === 0) {
-		return false;
+	if (!('jmbg' in ucenik) || ucenik.jmbg === null) {
+		return new Error('JMBG ucenika nije validan!');
 	}
 	if (!('rodjen' in ucenik) || ucenik.rodjen === '') {
-		return false;
+		return new Error('Datum rodjenja ucenika nije validan!');
 	}
-	if (!('razred' in ucenik) || ucenik.razred === 0) {
-		return false;
+	if (!('razred' in ucenik) || ucenik.razred === '') {
+		return new Error('Razred ucenika nije validan!');
 	}
-	if (!('odeljenje' in ucenik) || ucenik.odeljenje === 0) {
-		return false;
+	if (!('odeljenje' in ucenik) || ucenik.odeljenje === '') {
+		return new Error('Odeljenje ucenika nije validno!');
 	}
-	if (!('ispisan' in ucenik) || ucenik.odeljenje === undefined) {
-		return false;
+	if (!('ispisan' in ucenik) || ucenik.ispisan === '') {
+		return new Error('Status upisan/ispisan ucenika nije validan!');
 	}
 	return true;
 };
@@ -95,27 +95,58 @@ api.post('/queryUcenici', (req, res) => {
 });
 
 api.post('/addUcenik', (req, res) => {
-	const data = JSON.parse(req.body);
+	const data = req.body;
+
 	// Check if ucenik is valid
 	if (!validateUcenik(data)) {
-		return res.status(400).send();
+		return res.status(400).send({
+			added: false,
+			error: 'Ucenik nije validan!'
+		});
 	}
 
 	MongoClient.connect(ServerUrl, (err, db) => {
 		if (err) {
-			return res.status(500).send(err);
+			return res.status(500).send({
+				added: false,
+				error: err
+			});
 		}
 
 		const collUcenici = db.collection('ucenici');
+
+		collUcenici.find({jmbg: data.jmbg}).toArray((err, docs) => {
+			if (err) {
+				return res.status(500).send({
+					added: false,
+					error: err
+				});
+			}
+
+			if (docs !== []) {
+				return res.status(400).send({
+					added: false,
+					warn: new Error('Ucenik vec postoji!')
+				})
+			}
+
+			return res.send(docs);
+		});
 
 		collUcenici.insertOne(data, (err, result) => {
 			db.close();
 
 			if (err) {
-				return res.status(500).send(err);
+				return res.status(500).send({
+					added: false,
+					error: err
+				});
 			}
 
-			return res.send(result);
+			return res.send({
+				added: true,
+				error: undefined
+			});
 		});
 	});
 });
