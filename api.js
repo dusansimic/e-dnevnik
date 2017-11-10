@@ -64,15 +64,7 @@ api.get('/getUcenici', (req, res) => {
 });
 
 api.post('/queryUcenici', (req, res) => {
-	const data = req.body;
-	const query = {};
-
-	if (data.name !== '') {
-		query.name = data.name;
-	}
-	if (data.surname !== '') {
-		query.surname = data.surname;
-	}
+	const query = req.body;
 
 	MongoClient.connect(ServerUrl, (err, db) => {
 		if (err) {
